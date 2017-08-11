@@ -10,58 +10,79 @@
 
 #include <iostream>
 #include <cmath>
+#include <stack>
+#include <cassert>
 
-const int POWER_SIZE = 3;
+static const int POWER_SIZE = 3;
+static const int PERM_SIZE = 9;
 
-/*
- * look for positive integers that are the sum of squares of four different positive integers
- */
-void FindExponetiationPermutation(const int n)
+int StackExponetiationSum(std::stack<int> permutation);
+
+std::stack<int> FindExponetiationPermutationStack(const int n)
 {
-    int max_possible_i = std::pow(n, 1.0/POWER_SIZE);
-    int min_possible_i = std::pow(n / 4, 1.0/ POWER_SIZE);
-    for (int i = max_possible_i; i > min_possible_i; i--)
+    std::stack<int> permutation;
+    int remain = n;
+    int max_possible = std::pow(n, 1.0/POWER_SIZE);
+    int next_element = max_possible;
+    int popped;
+    while (true)
     {
-        int remain = n;
-        remain -= static_cast<int>(std::pow(i, POWER_SIZE));
-        int max_possible_j = i - 1 >= std::pow(remain, 1.0/POWER_SIZE) ? std::pow(remain, 1.0/POWER_SIZE) : (i - 1);
-        int min_possible_j = std::pow(remain / 3, 1.0/POWER_SIZE);
-        for (int j = max_possible_j; j > min_possible_j; j--)
+        bool has_popped = false;
+        permutation.push(next_element);
+        // when both size and sum meet requirements, return
+        if (permutation.size() == PERM_SIZE && StackExponetiationSum(permutation) == n)
+            return permutation;
+        // when top is 1 and stack size is also 1, search failed, retuan empty stack
+        if (permutation.top() == 1 && permutation.size() == 1)
         {
-            remain -= static_cast<int>(std::pow(j, POWER_SIZE));
-            if (remain <= 0) break;
-            int max_possible_k = j - 1 >= std::pow(remain, 1.0/POWER_SIZE) ? std::pow(remain, 1.0/POWER_SIZE) : (j - 1);
-            int min_possible_k = std::pow(remain / 2, 1.0/POWER_SIZE);
-            for (int k = max_possible_k; k > min_possible_k; k--)
-            {
-                remain -= static_cast<int>(std::pow(k, POWER_SIZE));
-                if (remain <= 0) break;
-                int max_possible_l = k - 1 >= std::pow(remain, 1.0/POWER_SIZE) ? std::pow(remain, 1.0/POWER_SIZE) : (k - 1);
-                for (int l = max_possible_l;;l--)
-                {
-                    if (remain == static_cast<int>(std::pow(l, POWER_SIZE)))
-                    {
-                        std::cout << "Found for " << n << std::endl;
-                        std::cout << "i: " << i << " j: " << j << " k: " << k << " l: " << l << std::endl;
-                        return;
-                    }
-                    else if (remain > static_cast<int>(std::pow(l, POWER_SIZE)))
-                    {
-                        break;
-                    }
-                }
-            }
+            permutation.pop();
+            return permutation;
         }
+        // when stack size is full, or stack top is 1(no more element to push), stack pops
+        if (permutation.size() == PERM_SIZE || next_element == 1)
+        {
+            popped = permutation.top();
+            permutation.pop();
+            has_popped = true;
+        }
+        // if 1 is popped, the new top is existed, also needs to be popped
+        if (has_popped && popped == 1 && !permutation.empty())
+        {
+            popped = permutation.top();
+            permutation.pop();
+            has_popped = true;
+        }
+        // calculate next element
+        if (has_popped)
+            next_element = popped - 1;
+        else
+            next_element -= 1;
     }
-    std::cout << "Not found for " << n << std::endl;
+}
 
-    return;
+int StackExponetiationSum(std::stack<int> permutation)
+{
+    int sum = 0;
+    while (!permutation.empty())
+    {
+        int top = permutation.top();
+        sum += std::pow(top, POWER_SIZE);
+        permutation.pop();
+    }
+    return sum;
 }
 
 int main(void)
 {
-    for (int i = 0; i < 1000; i++)
-        FindExponetiationPermutation(i);
+    // find exponetiation permutation, stack method test
+    for (int i = 1; i < 5000; i++)
+    {
+        std::stack<int> perm = FindExponetiationPermutationStack(i);
+        if (perm.empty())
+            std::cout << "Can't find for " << i << std::endl;
+        else
+            ;    // you can output all elements in stack to get list when such permutation exists
+    }
 
     return 0;
 }
