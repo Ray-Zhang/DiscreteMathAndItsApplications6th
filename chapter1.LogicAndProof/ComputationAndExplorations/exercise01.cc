@@ -32,12 +32,6 @@ std::stack<int> FindExponetiationPermutationStack(const int n)
         // when both size and sum meet requirements, return
         if (permutation.size() == PERM_SIZE && StackExponetiationSum(permutation) == n)
             return permutation;
-        // when top is 1 and stack size is also 1, search failed, retuan empty stack
-        if (permutation.top() == 1 && permutation.size() == 1)
-        {
-            permutation.pop();
-            return permutation;
-        }
         // when stack size is full, or stack top is 1(no more element to push), stack pops
         if (permutation.size() == PERM_SIZE || next_element == 1)
         {
@@ -46,8 +40,9 @@ std::stack<int> FindExponetiationPermutationStack(const int n)
             has_popped = true;
         }
         // if 1 is popped, the new top is existed, also needs to be popped
-        if (has_popped && popped == 1 && !permutation.empty())
+        if (has_popped && popped == 1)
         {
+            if (permutation.empty()) return permutation;
             popped = permutation.top();
             permutation.pop();
             has_popped = true;
@@ -81,7 +76,14 @@ int main(void)
         if (perm.empty())
             std::cout << "Can't find for " << i << std::endl;
         else
-            ;    // you can output all elements in stack to get list when such permutation exists
+        {
+            std::cout << "Found for i: " << i << std::endl;
+            while (!perm.empty())
+            {
+                std::cout << perm.top() << std::endl;
+                perm.pop();
+            }
+        }
     }
 
     return 0;
