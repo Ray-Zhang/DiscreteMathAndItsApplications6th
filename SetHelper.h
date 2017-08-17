@@ -11,10 +11,13 @@
 
 #include <set>
 #include <string>
-#include <set>
+#include <iostream>
+#include <map>
 #include <iostream>
 
-template <class T>
+#ifndef _SETHELPER_H
+#define _SETHELPER_H
+template <typename T>
 std::string SetToBinaryString(const std::set<T> &universal_set, const std::set<T> &original_set)
 {
     std::string ret_value("");
@@ -29,7 +32,7 @@ std::string SetToBinaryString(const std::set<T> &universal_set, const std::set<T
     return ret_value;
 }
 
-template <class T>
+template <typename T>
 void BinaryStringToSet(std::set<T> &ret_set, const std::set<T> &universal, const std::string &set_string)
 {
     if (universal.size() != set_string.size())
@@ -49,7 +52,7 @@ std::string Union(const std::string &original_set_a, const std::string &original
 
 std::string Intersection(const std::string &original_set_a, const std::string &original_set_b);
 
-template <class T>
+template <typename T>
 void AddMultiElemToSet(std::multiset<T> &ret_set, const std::size_t elem_size, const T &elem)
 {
     for (int i = 0; i < elem_size; i++)
@@ -60,7 +63,7 @@ void AddMultiElemToSet(std::multiset<T> &ret_set, const std::size_t elem_size, c
     return;
 }
 
-template <class T>
+template <typename T>
 void MultiSetUnion(std::multiset<T> &ret_set, const std::multiset<T> &original_multiset_a, const std::multiset<T> &original_multiset_b)
 {
     ret_set.clear();
@@ -92,7 +95,7 @@ void MultiSetUnion(std::multiset<T> &ret_set, const std::multiset<T> &original_m
     return;
 }
 
-template <class T>
+template <typename T>
 void MultiSetIntersection(std::multiset<T> &ret_set, const std::multiset<T> &original_multiset_a, const std::multiset<T> &original_multiset_b)
 {
     ret_set.clear();
@@ -113,7 +116,7 @@ void MultiSetIntersection(std::multiset<T> &ret_set, const std::multiset<T> &ori
     return;
 }
 
-template <class T>
+template <typename T>
 void MultiSetSubtract(std::multiset<T> &ret_set, const std::multiset<T> &multiset_minuend, const std::multiset<T> &multiset_subtrahend)
 {
     ret_set.clear();
@@ -130,7 +133,7 @@ void MultiSetSubtract(std::multiset<T> &ret_set, const std::multiset<T> &multise
 }
 
 
-template <class T>
+template <typename T>
 void MultiSetAdd(std::multiset<T> &ret_set, const std::multiset<T> &original_multiset_a, const std::multiset<T> &original_multiset_b)
 {
     ret_set.clear();
@@ -154,7 +157,68 @@ void MultiSetAdd(std::multiset<T> &ret_set, const std::multiset<T> &original_mul
     return;
 }
 
+template <typename T>
+using FuzzySet = std::map<T, double>;
 
+template <typename T>
+void FuzzySetComplement(FuzzySet<T> &ret_set, const FuzzySet<T> &universal_set, const FuzzySet<T> &original_set)
+{
+    ret_set.clear();
+    for (auto elem : universal_set)
+    {
+        auto target_iter = original_set.find(elem.first);
+        if (target_iter == original_set.end())
+        {
+            ret_set[elem.first] = 1.0;
+        }
+        else
+        {
+            ret_set[elem.first] = 1.0 - (*target_iter).second;
+        }
+    }
+    return;
+}
 
+template <typename T>
+void FuzzySetUnion(FuzzySet<T> &ret_set, const FuzzySet<T> &original_set_a, const FuzzySet<T> &original_set_b)
+{
+    ret_set.clear();
+    for (auto elem : original_set_a)
+    {
+        auto target_iter = original_set_b.find(elem.first);
+        if (target_iter == original_set_b.end())
+        {
+            ret_set[elem.first] = elem.second;
+        }
+        else
+        {
+            ret_set[elem.first] = (elem.second >= (*target_iter).second ? elem.second : (*target_iter).second);
+        }
+    }
+    for (auto elem : original_set_b)
+    {
+        auto target_iter = original_set_a.find(elem.first);
+        if (target_iter == original_set_a.end())
+        {
+            ret_set[elem.first] = elem.second;
+        }
+    }
+    return;
+}
 
+template <typename T>
+void FuzzySetIntersection(FuzzySet<T> &ret_set, const FuzzySet<T> &original_set_a, const FuzzySet<T> &original_set_b)
+{
+    ret_set.clear();
+    for (auto elem : original_set_a)
+    {
+        auto target_iter = original_set_b.find(elem.first);
+        if (target_iter != original_set_b.end())
+        {
+            ret_set[elem.first] = (elem.second <= (*target_iter).second ? elem.second : (*target_iter).second);
+        }
+    }
+    return;
+}
+#endif
 
