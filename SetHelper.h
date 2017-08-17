@@ -130,7 +130,6 @@ void MultiSetSubtract(std::multiset<T> &ret_set, const std::multiset<T> &multise
 }
 
 
-// TODO
 template <class T>
 void MultiSetAdd(std::multiset<T> &ret_set, const std::multiset<T> &original_multiset_a, const std::multiset<T> &original_multiset_b)
 {
@@ -138,16 +137,8 @@ void MultiSetAdd(std::multiset<T> &ret_set, const std::multiset<T> &original_mul
     // Iterate all unique elements in multiset a
     for (auto unique_elem = original_multiset_a.cbegin(); unique_elem != original_multiset_a.cend(); unique_elem = original_multiset_a.upper_bound(*unique_elem))
     {
-        if (original_multiset_a.count(*unique_elem) >= original_multiset_b.count(*unique_elem))
-        {
-            std::size_t elem_size = original_multiset_a.count(*unique_elem);
-            AddMultiElemToSet(ret_set, elem_size, *unique_elem);
-        }
-        else
-        {
-            std::size_t elem_size = original_multiset_b.count(*unique_elem);
-            AddMultiElemToSet(ret_set, elem_size, *unique_elem);
-        }
+        std::size_t elem_size = original_multiset_a.count(*unique_elem) + original_multiset_b.count(*unique_elem);
+        AddMultiElemToSet(ret_set, elem_size, *unique_elem);
     }
     // Iterate all unique elements in multise b, ignore any element already put into ret_set
     for (auto unique_elem = original_multiset_b.cbegin(); unique_elem != original_multiset_b.cend(); unique_elem = original_multiset_b.upper_bound(*unique_elem))

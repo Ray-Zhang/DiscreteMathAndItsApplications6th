@@ -38,6 +38,8 @@ int main(void)
     assert(output == std::multiset<char>({'a', 'a', 'b', 'b'}));
     MultiSetSubtract(output, A, B);
     assert(output == std::multiset<char>({'a', 'c'}));
+    MultiSetAdd(output, A, B);
+    assert(output == std::multiset<char>({'a','a','a','a','a','b','b','b','b','b','c','d','d','d','d'}));
 
     return 0;
 }
