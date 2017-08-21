@@ -15,6 +15,7 @@
 #include <map>
 #include <iostream>
 #include <utility>
+#include <cmath>
 
 #ifndef _SETHELPER_H
 #define _SETHELPER_H
@@ -235,6 +236,32 @@ void GenerateCartesianProduct(CartesianProducts<T1, T2> &ret_set, const std::set
         {
             ret_set.insert(std::make_pair(elem_first, elem_second));
         }
+    }
+    return;
+}
+
+template <typename T>
+using Powerset = std::set<std::set<T>>;
+
+template <typename T>
+void GeneratePowerSets(Powerset<T> &output, const std::set<T> &original_set)
+{
+    output.clear();
+    int power_set_size = static_cast<int>(std::pow(2, original_set.size()));
+    for (int i = 0; i < power_set_size; i++)
+    {
+        std::set<T> power_set_elem({});
+        auto iter = original_set.begin();
+        for (int j = 0; j < original_set.size(); j++)
+        {
+            if (((0x01 << j) & i) != 0)
+            {
+                power_set_elem.insert(*iter);
+            }
+            iter++;
+
+        }
+        output.insert(power_set_elem);
     }
     return;
 }
