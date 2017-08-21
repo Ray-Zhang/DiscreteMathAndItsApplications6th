@@ -14,6 +14,7 @@
 #include <iostream>
 #include <map>
 #include <iostream>
+#include <utility>
 
 #ifndef _SETHELPER_H
 #define _SETHELPER_H
@@ -220,5 +221,22 @@ void FuzzySetIntersection(FuzzySet<T> &ret_set, const FuzzySet<T> &original_set_
     }
     return;
 }
-#endif
 
+template <typename T1, typename T2>
+using CartesianProducts = std::set<std::pair<T1, T2>>;
+
+template <typename T1, typename T2>
+void GenerateCartesianProduct(CartesianProducts<T1, T2> &ret_set, const std::set<T1> &first_set, const std::set<T2> &second_set)
+{
+    ret_set.clear();
+    for (auto elem_first : first_set)
+    {
+        for (auto elem_second : second_set)
+        {
+            ret_set.insert(std::make_pair(elem_first, elem_second));
+        }
+    }
+    return;
+}
+
+#endif
