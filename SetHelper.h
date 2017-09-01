@@ -254,7 +254,7 @@ void GeneratePowerSets(Powerset<T> &output, const std::set<T> &original_set)
         auto iter = original_set.begin();
         for (int j = 0; j < original_set.size(); j++)
         {
-            if (((0x01 << j) & i) != 0)
+            if ((0x01 << j) & i)
             {
                 power_set_elem.insert(*iter);
             }
