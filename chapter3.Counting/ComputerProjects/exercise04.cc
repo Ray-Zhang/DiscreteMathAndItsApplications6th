@@ -4,9 +4,9 @@
  *
  * Distributed under terms of the MIT license.
  *
- * Given an equation x1 + x2 + ... + xn = C, where C is a 
- * constant, and x1, x2, ... , xn are nonnegative integers, list
- * all the solutions
+ * Given an equation x1 + x2 + ... + xn = C, where C is a
+ * constant, and x1, x2, ..., xn are nonnegative integers, list
+ * all the solutions.
  */
 
 #include <iostream>
@@ -15,14 +15,15 @@
 #include <cassert>
 
 static const int POWER_SIZE = 1;
-static const int PERM_SIZE = 4;
-static const int TEST_START = 10;
+static const int STACK_MAX_ITEM = 5;
 
 int StackExponetiationSum(std::stack<int> permutation);
+void PrintOutStack(std::stack<int> permutation);
 
-std::stack<int> FindExponetiationPermutationStack(const int n)
+void FindExponetiationPermutationStack(const int n)
 {
     std::stack<int> permutation;
+    int permutation_counts = 0;
     int remain = n;
     int max_possible = std::pow(n, 1.0/POWER_SIZE);
     int next_element = max_possible;
@@ -32,18 +33,19 @@ std::stack<int> FindExponetiationPermutationStack(const int n)
         bool has_popped = false;
         permutation.push(next_element);
         int sum = StackExponetiationSum(permutation);
-        // when both size and sum meet requirements, return
-        if (permutation.size() == PERM_SIZE && sum == n)
-            return permutation;
-        // when sum is greater or equal to n, stack pops
-        if (sum >= n)
+        // when both size and sum meet requirements, print out
+        if (sum == n)
         {
+            std::cout << "Found one permutation for :" << n << std::endl;
+            permutation_counts++;
+            PrintOutStack(permutation);
+            // pop to continue finding other permutation
             popped = permutation.top();
             permutation.pop();
             has_popped = true;
         }
-        // when stack size is full, stack pops
-        if (permutation.size() == PERM_SIZE)
+        // when sum is greater than n or stack is full, stack pops
+        if (sum > n || permutation.size() == STACK_MAX_ITEM)
         {
             popped = permutation.top();
             permutation.pop();
@@ -53,7 +55,7 @@ std::stack<int> FindExponetiationPermutationStack(const int n)
         // when there's no more element to pop, search failed
         while (has_popped && popped == 1)
         {
-            if (permutation.empty()) return permutation;
+            if (permutation.empty()) return;
             popped = permutation.top();
             permutation.pop();
             has_popped = true;
@@ -83,25 +85,30 @@ int StackExponetiationSum(std::stack<int> permutation)
     return sum;
 }
 
+void PrintOutStack(std::stack<int> permutation)
+{
+    int count = 0;
+    while (!permutation.empty())
+    {
+        std::cout << permutation.top() << std::endl;
+        permutation.pop();
+        count++;
+    }
+    for (;count < STACK_MAX_ITEM; count++)
+    {
+        std::cout << 0 << std::endl;
+    }
+}
+
 int main(void)
 {
-    // find exponetiation permutation, stack method test
-    for (int i = TEST_START; i < 50; i++)
+    for (int i = 1; i < 100; i++)
     {
-        std::stack<int> perm = FindExponetiationPermutationStack(i);
-        if (perm.empty())
-            std::cout << "Can't find for " << i << std::endl;
-        else
-        {
-            std::cout << "Found for i: " << i << std::endl;
-            while (!perm.empty())
-            {
-                std::cout << perm.top() << std::endl;
-                perm.pop();
-            }
-        }
+        std::cout << i << "'s result" << std::endl;
+        FindExponetiationPermutationStack(i);
     }
 
     return 0;
 }
+
 
