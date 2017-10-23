@@ -9,41 +9,51 @@
  */
 
 #include <set>
-#include <iostream>
-#include <cassert>
 #include <string>
+#include <vector>
+#include "exercise03.h"
 
-using BitsSet = std::set<std::string>;
-void UpdateBitsSet(BitsSet &bits_set_n_minus1, BitsSet &bits_set_n_minus2);
-
-int main(void)
+BitSequences::BitSequences(size_t n)
 {
-    BitsSet bits_set_n_minus1({"10", "01", "11"});
-    BitsSet bits_set_n_minus2({"0", "1"});
-
-    for (int i = 3; i < 10; i++)
+    if (n > 2)
     {
-        UpdateBitsSet(bits_set_n_minus1, bits_set_n_minus2);
+        all_sequences_of_nbits = {};
+        for (const auto &item : (BitSequencesFactory::bit_seq_vector[n-2])->all_sequences_of_nbits)
+        {
+            all_sequences_of_nbits.insert(item + "1");
+        }
+        for (const auto &item : (BitSequencesFactory::bit_seq_vector[n-3])->all_sequences_of_nbits)
+        {
+            all_sequences_of_nbits.insert(item + "10");
+        }
     }
-    for (const auto &item : bits_set_n_minus2)
+    else if (n == 1)
     {
-        std::cout << item << std::endl;
+        all_sequences_of_nbits = {"0", "1"};
     }
-
-    return 0;
+    else
+    {
+        all_sequences_of_nbits = {"01", "11", "10"};
+    }
 }
 
-void UpdateBitsSet(BitsSet &bits_set_n_minus1, BitsSet &bits_set_n_minus2)
+BitSequenceVector BitSequencesFactory::bit_seq_vector({new BitSequences(1), new BitSequences(2)});
+
+size_t BitSequencesFactory::max_n = 2;
+
+BitSequences* BitSequencesFactory::GetBitSequences(size_t n)
 {
-    BitsSet next({});
-    for (const auto &item : bits_set_n_minus1)
+    if (n <= max_n)
     {
-        next.insert(item + "1");
+        return bit_seq_vector[n-1];
     }
-    for (const auto &item : bits_set_n_minus2)
+    else
     {
-        next.insert(item + "10");
+        for (int i = max_n + 1; i <= n; i++)
+        {
+            bit_seq_vector.push_back(new BitSequences(i));
+        }
+        return bit_seq_vector[n-1];
     }
-    bits_set_n_minus2 = bits_set_n_minus1;
-    bits_set_n_minus1 = next;
 }
+
